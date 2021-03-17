@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.2
+
 ### multi stage builds
 
 # Build image - action code
