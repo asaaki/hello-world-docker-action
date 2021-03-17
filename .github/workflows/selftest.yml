@@ -1,4 +1,4 @@
-name: Self Test
+name: Self Test Run
 
 on: [push]
 
@@ -7,9 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
+    - uses: actions/checkout@v2
     - name: Hello world action step
       id: hello # for use in step below
-      uses: asaaki/hello-world-docker-action@master
+      # uses: asaaki/hello-world-docker-action@master
+      uses: ./
       with:
         name: 'SelfTest'
     - name: Get the output time
