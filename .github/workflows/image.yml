@@ -32,7 +32,7 @@ jobs:
       id: docker_meta
       with:
         images: |
-          ghcr.io/asaaki/hello-world-action
+          ghcr.io/asaaki/hello-world-docker-action
         tag-sha: true
         tag-edge: true
         tag-latest: true
