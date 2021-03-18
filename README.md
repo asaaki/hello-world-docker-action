@@ -26,7 +26,7 @@ jobs:
     steps:
     - name: Hello world action step
       id: hello # for use in step below
-      uses: asaaki/hello-world-docker-action@master
+      uses: asaaki/hello-world-docker-action@edge
       with:
         name: 'SelfTest'
     - name: Get the output time
