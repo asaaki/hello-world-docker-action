@@ -10,7 +10,7 @@ on:
     - cron: '0 5 * * *'
 
 jobs:
-  hello_world_job:
+  build_and_push:
     runs-on: ubuntu-20.04
     name: Create docker image
 
@@ -65,6 +65,7 @@ jobs:
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   self_test:
+    needs: [build_and_push]
     runs-on: ubuntu-20.04
     name: Self tests the hello world docker action
 
