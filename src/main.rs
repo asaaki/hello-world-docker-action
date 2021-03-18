@@ -5,6 +5,9 @@ fn main() {
     for (idx, arg) in env::args().enumerate() {
         println!("arg[{}] = {}", idx, arg);
     }
+    for (key, value) in env::vars() {
+        println!("env[{}] = {}", key, value);
+    }
 
     let args: Vec<String> = env::args().collect();
 
