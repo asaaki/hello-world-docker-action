@@ -22,7 +22,7 @@ jobs:
     # - run: docker system df -v
     # - run: docker buildx install
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v2.1.4
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -33,7 +33,7 @@ jobs:
       id: docker_meta
       with:
         images: |
-          ghcr.io/asaaki/app
+          ghcr.io/asaaki/hello-world-action
         tag-sha: true
 
     - uses: docker/setup-buildx-action@v1
