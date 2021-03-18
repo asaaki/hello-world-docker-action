@@ -6,11 +6,11 @@ jobs:
   hello_world_job:
     runs-on: ubuntu-20.04
     name: A job to say hello
+    if: github.event_name != 'pull_request'
 
     steps:
     - uses: actions/checkout@v2
     - uses: docker/login-action@v1
-      if: github.event_name != 'pull_request'
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
