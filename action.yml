@@ -4,7 +4,8 @@ description: 'Greet someone and record the time'
 
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  # image: 'Dockerfile'
+  image: 'ghcr.io/asaaki/hello-world-action:edge'
   args:
     - ${{ inputs.name }}
 
