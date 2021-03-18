@@ -18,7 +18,7 @@ jobs:
         password: ${{ secrets.GHCR_PAT }}
     - name: Pull image
       run: |
-        docker image prune -a -f >/dev/null 2>&1
+        # docker image prune -a -f >/dev/null 2>&1
         docker pull ghcr.io/${{ github.repository }}:edge
     - name: Hello world action step
       id: hello # for use in step below
