@@ -10,13 +10,17 @@ runs:
   using: 'docker'
   image: 'ghcr.io/asaaki/hello-world-docker-action:v0'
   args:
-    - ${{ inputs.greetee }}
+    - --name ${{ inputs.greetee }}
+    - --token ${{ inputs.github_token }}
 
 inputs:
   greetee: # id of input
     description: 'Who to greet'
     required: true
     default: 'World'
+  github_token:
+    description: 'GitHub Personal Access Token (PAT) with ??? permissions'
+    required: true
 
 outputs:
   time: # id of output

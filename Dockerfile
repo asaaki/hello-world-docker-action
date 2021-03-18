@@ -5,42 +5,43 @@ ARG APP_NAME=action
 
 # use it only if you really need to squeeze the bytes
 # note: alpine base already comes with ~5.61 MB (alpine 3.11)
-ARG STRIP=1
-ARG COMPRESS=0
+ARG STRIP=0
+
+# if you want more information on panics
+ARG RUST_BACKTRACE=0
+
+# ARG BASE_IMAGE=ghcr.io/asaaki/rust-musl-cross:x86_64-musl
+# ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
+ARG BASE_IMAGE=ghcr.io/asaaki/rust-musl-builder:latest
 
 #########################
 ##### builder layer #####
 #########################
 
-FROM rust:1.50-slim-buster as builder
+FROM ${BASE_IMAGE} AS builder
+# base image might have changed it, so let's enforce root to be able to do system changes
+USER root
 
-ENV BUILD_CACHE_BUSTER="2021-03-17T00:00:00"
-ENV DEB_PACKAGES="ca-certificates cmake curl file g++ gcc gcc-multilib git libssl-dev linux-headers-amd64 make musl-tools patch pkg-config wget xz-utils"
+ENV BUILD_CACHE_BUSTER="2021-04-29T00:00:00"
+ENV DEB_PACKAGES="ca-certificates curl file git make patch wget xz-utils"
 
 # @see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/experimental.md#example-cache-apt-packages
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
-  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+ && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 RUN \
   --mount=type=cache,target=/var/cache/apt \
   --mount=type=cache,target=/var/lib/apt \
-  echo "===== Build environment =====" \
-  && uname -a \
-  && echo "===== Dependencies =====" \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends $DEB_PACKAGES \
-  && ln -s /usr/bin/musl-gcc /usr/bin/musl-g++ \
-  && echo "===== Rust target: musl =====" \
-  && rustup target add x86_64-unknown-linux-musl \
-  && echo "===== UPX =====" \
-  && wget -O upx.tar.xz https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz \
-  && tar -xf upx.tar.xz --directory /bin --strip-components=1 $(tar -tf upx.tar.xz | grep -E 'upx$') \
-  && rm -f upx.tar.xz \
-  && echo "===== Toolchain =====" \
-  && rustup --version \
-  && cargo --version \
-  && rustc --version \
-  && echo "Rust builder image done."
+    echo "===== Build environment =====" \
+ && uname -a \
+ && echo "===== Dependencies =====" \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends $DEB_PACKAGES \
+ && echo "===== Toolchain =====" \
+ && rustup --version \
+ && cargo --version \
+ && rustc --version \
+ && echo "Rust builder image done."
 
 #######################
 ##### build layer #####
@@ -52,46 +53,34 @@ FROM builder as build
 ARG APP_NAME
 ARG BUILD_MODE
 ARG STRIP
-ARG COMPRESS
-
-# create stub app for better build caching
-RUN USER=root cargo new --bin /app
-
-WORKDIR /app
-
-COPY .cargo /app/.cargo
-COPY Cargo.* /app/
 
 # ENV RUSTFLAGS="-C target-feature=-crt-static"
 
-RUN \
-  --mount=type=cache,target=/usr/local/cargo/registry \
-  --mount=type=cache,target=/app/target \
-  cargo fetch \
-  && cargo build --release --target=x86_64-unknown-linux-musl \
-  && rm -rf /app/src
+WORKDIR /app
 
-COPY build.rs /app/
+COPY Cargo.* build.rs /app/
 COPY src /app/src
 
 RUN \
   --mount=type=cache,target=/usr/local/cargo/registry \
   --mount=type=cache,target=/app/target \
-  find src -exec touch {} + \
- && cargo install --root /app --target=x86_64-unknown-linux-musl --path .
+  cargo fetch && \
+  cargo install --root /app --target=x86_64-unknown-linux-musl --path .
+
+RUN echo "SIZE ORIGIN:" && du -h bin/${APP_NAME}
 # remove debug symbols
 RUN [ "${STRIP}" = "1" ] && (echo "Stripping debug symbols ..."; strip bin/${APP_NAME}) || echo "No stripping enabled"
-# compress binary; upx docs: https://github.com/upx/upx/blob/master/doc/upx.pod
-RUN [ "${COMPRESS}" = "1" ] && (echo "Compressing binary ..."; upx --best bin/${APP_NAME}) || echo "No compression enabled"
-RUN du -h bin/${APP_NAME}
+RUN echo "SIZE FINAL:" && du -h bin/${APP_NAME}
 
 ######################
 ##### base layer #####
 ######################
 
 FROM alpine:3.13 as base
-# RUN apk update --no-cache && apk upgrade --no-cache && apk add --no-cache tini
-WORKDIR /app
+RUN apk --no-cache update && \
+    apk --no-cache upgrade && \
+    apk --no-cache add ca-certificates
+WORKDIR /
 
 ####################
 ##### run layer ####
@@ -109,9 +98,23 @@ USER 1001
 ##### final image #####
 #######################
 
+# not really recommended
+FROM scratch as production_binary
+
+ARG APP_NAME
+ARG RUST_BACKTRACE
+ENV RUST_BACKTRACE=${RUST_BACKTRACE}
+
+COPY --from=build /app/bin/${APP_NAME} /
+
+ENTRYPOINT [ "/action" ]
+
+# recommended
 FROM run as production
 
 ARG APP_NAME
+ARG RUST_BACKTRACE
+ENV RUST_BACKTRACE=${RUST_BACKTRACE}
 
 COPY --from=build --chown=appuser:appuser /app/bin/${APP_NAME} /
 

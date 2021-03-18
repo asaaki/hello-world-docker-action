@@ -1,4 +1,4 @@
 // optional build.rs
-fn main () {
-  // noop
+fn main() {
+    // noop
 }

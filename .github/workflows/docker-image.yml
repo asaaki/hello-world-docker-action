@@ -8,6 +8,7 @@ on:
     branches: [ 'main' ]
   schedule:
     - cron: '0 5 * * *'
+  workflow_dispatch:
 
 jobs:
   build_and_push:
@@ -21,26 +22,30 @@ jobs:
     - run: docker info
     - run: docker system df -v
 
-    - uses: actions/cache@v2.1.4
+    - uses: actions/cache@v2.1.5
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    - uses: crazy-max/ghaction-docker-meta@v1
+    - uses: crazy-max/ghaction-docker-meta@v2.3.0
       id: docker_meta
       with:
         images: |
           ghcr.io/asaaki/hello-world-docker-action
-        tag-sha: true
-        tag-edge: true
-        tag-latest: true
-        tag-semver: |
-          {{version}}
-          {{major}}.{{minor}}
-          {{major}}
-          v{{major}}
+        tags: |
+          type=semver,pattern=v{{version}}
+          type=semver,pattern=v{{major}}.{{minor}}
+          type=semver,pattern=v{{major}}
+          type=sha
+          type=edge,branch=main
+          type=ref,event=pr
+          type=ref,event=branch
+          type=schedule,pattern=nightly
+        # latest=auto is the default
+        # flavor: |
+        #   latest=auto
 
     - uses: docker/login-action@v1
       if: github.event_name != 'pull_request'
@@ -76,5 +81,6 @@ jobs:
       uses: ./.image
       with:
         greetee: "${{ secrets.HELLO_SECRET_NAME }}"
+        github_token: ${{ secrets.GHCR_PAT }}
     - name: Get the output time
       run: echo "The time was ${{ steps.hello.outputs.time }}"
