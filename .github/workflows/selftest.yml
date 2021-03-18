@@ -15,7 +15,7 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PAT }}
-    - run: docker pull ghcr.io ${{ github.repository }}:edge
+    - run: docker pull ghcr.io/${{ github.repository }}:edge
     - name: Hello world action step
       id: hello # for use in step below
       uses: ./
