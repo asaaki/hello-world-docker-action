@@ -10,6 +10,7 @@ jobs:
     name: Self tests the hello world docker action
 
     steps:
+    - uses: actions/checkout@v2
     - name: Hello world action step
       id: hello # for use in step below
       uses: ./
