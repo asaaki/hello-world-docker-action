@@ -4,7 +4,7 @@ This action prints "Hello World" or "Hello" + the name of a person to greet to t
 
 ## Inputs
 
-### `who-to-greet`
+### `greetee`
 
 **Required** The name of the person to greet. Default `"World"`.
 
@@ -26,9 +26,9 @@ jobs:
     steps:
     - name: Hello world action step
       id: hello # for use in step below
-      uses: asaaki/hello-world-docker-action@edge
+      uses: asaaki/hello-world-docker-action@v0
       with:
-        name: 'SelfTest'
+        adressee: 'Happy User'
     - name: Get the output time
       run: echo "The time was ${{ steps.hello.outputs.time }}"
 ```

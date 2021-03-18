@@ -10,10 +10,10 @@ runs:
   using: 'docker'
   image: 'ghcr.io/asaaki/hello-world-docker-action:v0'
   args:
-    - ${{ inputs.name }}
+    - ${{ inputs.greetee }}
 
 inputs:
-  name: # id of input
+  greetee: # id of input
     description: 'Who to greet'
     required: true
     default: 'World'
