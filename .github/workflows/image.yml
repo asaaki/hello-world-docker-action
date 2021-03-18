@@ -63,3 +63,16 @@ jobs:
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  self_test:
+    runs-on: ubuntu-20.04
+    name: Self tests the hello world docker action
+
+    steps:
+    - name: Hello world action step
+      id: hello # for use in step below
+      uses: ./.image
+      with:
+        name: 'Image Builder'
+    - name: Get the output time
+      run: echo "The time was ${{ steps.hello.outputs.time }}"
