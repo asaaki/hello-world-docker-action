@@ -12,7 +12,7 @@ ARG COMPRESS=0
 ##### builder layer #####
 #########################
 
-FROM rust:1.50-slim-buster as builder
+FROM rust:1.51.0-slim-buster as builder
 
 ENV BUILD_CACHE_BUSTER="2021-03-17T00:00:00"
 ENV DEB_PACKAGES="ca-certificates cmake curl file g++ gcc gcc-multilib git libssl-dev linux-headers-amd64 make musl-tools patch pkg-config wget xz-utils"
