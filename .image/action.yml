@@ -8,15 +8,17 @@ branding:
 
 runs:
   using: 'docker'
-  image: 'ghcr.io/asaaki/hello-world-docker-action:edge'
-  args:
-    - ${{ inputs.greetee }}
+  image: 'ghcr.io/asaaki/hello-world-docker-action:event-data' # TODO: do not forget to switch back!
+  args: ["--greetee", "${{ inputs.greetee }}", "--token", "${{ inputs.github_token }}"]
 
 inputs:
   greetee: # id of input
     description: 'Who to greet'
     required: true
     default: 'World'
+  github_token:
+    description: 'GitHub Personal Access Token with repo permissions'
+    required: true
 
 outputs:
   time: # id of output
