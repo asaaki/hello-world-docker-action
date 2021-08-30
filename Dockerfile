@@ -76,7 +76,7 @@ RUN echo "SIZE FINAL:" && du -h bin/${APP_NAME}
 ##### base layer #####
 ######################
 
-FROM alpine:3.14.1 as base
+FROM alpine:3.14.2 as base
 RUN apk --no-cache update && \
     apk --no-cache upgrade && \
     apk --no-cache add ca-certificates
