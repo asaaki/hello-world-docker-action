@@ -30,7 +30,7 @@ jobs:
           ${{ runner.os }}-buildx-
 
     # https://github.com/docker/metadata-action
-    - uses: docker/metadata-action@v3.5.0
+    - uses: docker/metadata-action@v3.6.0
       id: docker_meta
       with:
         images: |
