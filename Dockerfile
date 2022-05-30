@@ -12,7 +12,7 @@ ARG RUST_BACKTRACE=0
 
 # ARG BASE_IMAGE=ghcr.io/asaaki/rust-musl-cross:x86_64-musl
 # ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
-ARG BASE_IMAGE=ghcr.io/asaaki/rust-musl-builder:latest
+ARG BASE_IMAGE=ghcr.io/asaaki/rust-musl-builder:1.61.0
 
 #########################
 ##### builder layer #####
@@ -22,7 +22,7 @@ FROM ${BASE_IMAGE} AS builder
 # base image might have changed it, so let's enforce root to be able to do system changes
 USER root
 
-ENV BUILD_CACHE_BUSTER="2021-04-29T00:00:00"
+ENV BUILD_CACHE_BUSTER="2022-05-30T00:00:00"
 ENV DEB_PACKAGES="ca-certificates curl file git make patch wget xz-utils"
 
 # @see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/experimental.md#example-cache-apt-packages
@@ -76,7 +76,7 @@ RUN echo "SIZE FINAL:" && du -h bin/${APP_NAME}
 ##### base layer #####
 ######################
 
-FROM alpine:3.15.4 as base
+FROM alpine:3.16.0 as base
 RUN apk --no-cache update && \
     apk --no-cache upgrade && \
     apk --no-cache add ca-certificates

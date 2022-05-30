@@ -10,10 +10,12 @@ use surf::Url;
 // https://docs.github.com/en/actions/reference/environment-variables
 #[derive(Debug, Envconfig)]
 struct EnvConfig {
+    #[allow(dead_code)]
     #[envconfig(from = "GITHUB_SERVER_URL")]
     server_url: String,
     #[envconfig(from = "GITHUB_API_URL")]
     api_url: String,
+    #[allow(dead_code)]
     #[envconfig(from = "GITHUB_GRAPHQL_URL")]
     graphql_url: String,
     #[envconfig(from = "GITHUB_REPOSITORY")]
