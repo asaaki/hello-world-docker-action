@@ -22,7 +22,6 @@ default:
 build:
 	docker build \
 		--progress=plain \
-		--build-arg STRIP=1 \
 		--build-arg RUST_BACKTRACE=1 \
 		-t $(LOCAL_DOCKER_IMAGE) .
 
