@@ -55,7 +55,7 @@ jobs:
         password: ${{ secrets.GHCR_PAT }}
 
     - uses: docker/setup-buildx-action@v3.4.0
-    - uses: docker/build-push-action@v6.4.0
+    - uses: docker/build-push-action@v6.4.1
       with:
         context: .
         cache-from: type=local,src=/tmp/.buildx-cache
