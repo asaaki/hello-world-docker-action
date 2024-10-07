@@ -60,7 +60,7 @@ RUN magicpak -v \
 
 ### busybox ###
 
-FROM busybox:1.36.1-glibc as shell
+FROM busybox:1.37.0-glibc as shell
 
 WORKDIR /shell
 
