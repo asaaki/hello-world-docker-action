@@ -60,7 +60,7 @@ type TypedResponse = BTreeMap<String, Value>;
 
 #[async_std::main]
 pub async fn main() -> MainResult {
-    #[cfg(openssl)]
+    #[cfg(feature = "openssl")]
     openssl_probe::init_ssl_cert_env_vars();
 
     let args = Args::from_args();
