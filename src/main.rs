@@ -2,8 +2,8 @@ use anyhow::{Context, Error, Result};
 use chrono::{DateTime, Utc};
 use envconfig::Envconfig;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use std::{collections::BTreeMap, env, fs};
+use serde_json::{Value, json};
+use std::{collections::BTreeMap, fs};
 use structopt::StructOpt;
 use surf::Url;
 
@@ -82,7 +82,7 @@ pub async fn main() -> MainResult {
 
         println!("url = {}", &url);
 
-        let client = create_client();
+        let client = surf::Client::new();
 
         let request = client
             .post(&url)
@@ -116,25 +116,4 @@ pub async fn main() -> MainResult {
     println!("::set-output name=time::{}", now.to_rfc3339());
 
     Ok(())
-}
-
-#[allow(dead_code)]
-fn debug_env_and_args() {
-    for (idx, arg) in env::args().enumerate() {
-        println!("arg[{}] = {}", idx, arg);
-    }
-
-    for (key, value) in env::vars() {
-        println!("env[{}] = {}", key, value);
-    }
-}
-
-#[allow(dead_code)]
-fn split_once(input: &str, sep: char) -> (&'_ str, &'_ str) {
-    let parts: Vec<&str> = input.splitn(2, sep).collect();
-    (parts[0], parts[1])
-}
-
-fn create_client() -> surf::Client {
-    surf::Client::new()
 }
