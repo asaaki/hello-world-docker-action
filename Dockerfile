@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1-labs
 
-FROM rust:1.85.0-bookworm as builder
+FROM rust:1.85.1-bookworm as builder
 
 ARG MAGICPAK_VER=1.4.0
 ARG MAGICPAK_ARCH=x86_64
