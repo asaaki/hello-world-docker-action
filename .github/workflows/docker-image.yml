@@ -38,11 +38,11 @@ jobs:
         images: |
           ghcr.io/asaaki/hello-world-docker-action
         tags: |
+          type=edge,branch=main
+          type=sha,prefix=git-
           type=semver,pattern=v{{version}}
           type=semver,pattern=v{{major}}.{{minor}}
           type=semver,pattern=v{{major}}
-          type=sha,prefix=git-
-          type=edge,branch=main,prefix=edge-
           type=ref,event=pr
           type=ref,event=branch
           type=schedule,pattern=nightly
