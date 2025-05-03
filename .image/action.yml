@@ -21,7 +21,7 @@ inputs:
 
 runs:
   using: docker
-  image: "ghcr.io/asaaki/hello-world-docker-action:git-${{ env.sha_short }}"
+  image: Dockerfile
   args:
     - --greetee
     - "${{ inputs.greetee }}"

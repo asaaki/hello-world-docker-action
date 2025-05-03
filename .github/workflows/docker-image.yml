@@ -24,12 +24,15 @@ jobs:
     - run: docker info
     - run: docker system df -v
 
-    - uses: actions/cache@v4
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    # - uses: actions/cache@v4
+    #   with:
+    #     path: /tmp/.buildx-cache
+    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-buildx-
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
 
     # https://github.com/docker/metadata-action
     - uses: docker/metadata-action@v5.7.0
@@ -58,11 +61,12 @@ jobs:
     - uses: docker/build-push-action@v6.16.0
       with:
         context: .
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.docker_meta.outputs.tags }}
         labels: ${{ steps.docker_meta.outputs.labels }}
+        platforms: linux/amd64,linux/arm64
 
     - name: Move cache
       run: |
