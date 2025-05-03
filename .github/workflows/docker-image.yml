@@ -68,11 +68,6 @@ jobs:
         labels: ${{ steps.docker_meta.outputs.labels }}
         platforms: linux/amd64
 
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   self_test:
     needs: [build_and_push]
     runs-on: ubuntu-latest
