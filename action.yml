@@ -23,8 +23,10 @@ runs:
   using: docker
   image: "ghcr.io/asaaki/hello-world-docker-action:edge"
   args:
-    - --name ${{ inputs.greetee }}
-    - --token ${{ inputs.github_token }}
+    - --name
+    - ${{ inputs.greetee }}
+    - --token
+    - ${{ inputs.github_token }}
 
 outputs:
   time: # id of output
