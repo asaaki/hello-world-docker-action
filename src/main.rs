@@ -5,19 +5,19 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{collections::BTreeMap, fs};
 use structopt::StructOpt;
-use surf::Url;
+use url::Url;
 
 // https://docs.github.com/en/actions/reference/environment-variables
 #[derive(Debug, Envconfig)]
 struct EnvConfig {
     #[allow(dead_code)]
     #[envconfig(from = "GITHUB_SERVER_URL")]
-    server_url: String,
+    server_url: Url,
     #[envconfig(from = "GITHUB_API_URL")]
-    api_url: String,
+    api_url: Url,
     #[allow(dead_code)]
     #[envconfig(from = "GITHUB_GRAPHQL_URL")]
-    graphql_url: String,
+    graphql_url: Url,
     #[envconfig(from = "GITHUB_REPOSITORY")]
     repository: String,
     #[envconfig(from = "GITHUB_EVENT_PATH")]
@@ -58,11 +58,8 @@ type TypedResponse = BTreeMap<String, Value>;
 // type TypedResponse = BTreeMap<Option<String>, Option<Value>>;
 // type TypedResponse = Value;
 
-#[async_std::main]
+#[tokio::main]
 pub async fn main() -> MainResult {
-    #[cfg(feature = "openssl")]
-    openssl_probe::init_ssl_cert_env_vars();
-
     let args = Args::from_args();
     let config = EnvConfig::init_from_env()
         .with_context(|| "Could not load all required environment variables")?;
@@ -82,23 +79,21 @@ pub async fn main() -> MainResult {
 
         println!("url = {}", &url);
 
-        let client = surf::Client::new();
+        let body = json!( { "body": "Some test comment from a rusty GH action." });
 
-        let request = client
-            .post(&url)
+        let request = reqwest::Client::new()
+            .post(url)
             // ! GitHub requires an user agent string, but some client implementations do not set one by default
             .header(
                 "user-agent",
-                "hello-world-docker-action client (rust/stable; client=surf+h1, tls=rustls)",
+                "hello-world-docker-action client (rust/stable; client=reqwest, tls=rustls)",
             )
             .header("accept", "application/vnd.github.v3+json")
             .header("authorization", format!("token {}", &token))
-            .body(json!( { "body": "Some test comment from a rusty GH action." }))
-            .build();
+            .json(&body)
+            ;
 
-        let mut response = client.send(request).await.map_err(Error::msg)?;
-
-        let res_json: TypedResponse = response.body_json().await.map_err(Error::msg)?;
+        let response = request.send().await.map_err(Error::msg)?;
 
         println!("[status] {}", response.status());
         // let headers = response.iter_mut().collect::<BTreeMap<String, String>>();
@@ -106,6 +101,9 @@ pub async fn main() -> MainResult {
         //     println!("[headers] {:?} => {:?}", name, values);
         // }
         // println!("[response] {:#?}", res_json);
+
+        let res_json: TypedResponse = response.json().await.map_err(Error::msg)?;
+
         println!("[response.id] {:#?}", res_json.get("id"));
     }
 

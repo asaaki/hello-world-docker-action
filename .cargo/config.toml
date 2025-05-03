@@ -1,1 +1,8 @@
-# blank
+[alias]
+fixit = "clippy --fix --allow-dirty --allow-staged --allow-no-vcs"
+
+u = "update"
+c = "check"
+t = "test"
+
+test-all = "test --workspace --all-features"
