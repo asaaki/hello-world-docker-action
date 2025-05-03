@@ -14,7 +14,7 @@ on:
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: Create docker image
 
     steps:
@@ -71,7 +71,7 @@ jobs:
 
   self_test:
     needs: [build_and_push]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: Self tests the hello world docker action
 
     steps:
