@@ -28,7 +28,7 @@ jobs:
       id: hello # for use in step below
       uses: asaaki/hello-world-docker-action@v0
       with:
-        adressee: 'Happy User'
+        greetee: 'Happy User'
     - name: Get the output time
       run: echo "The time was ${{ steps.hello.outputs.time }}"
 ```
