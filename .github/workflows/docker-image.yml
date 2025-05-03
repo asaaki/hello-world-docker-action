@@ -76,11 +76,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Short SHA
+      id: sha_short
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
     - name: Hello world action step
       id: hello # for use in step below
       uses: ./.image
       with:
         greetee: "${{ secrets.HELLO_SECRET_NAME }}"
         github_token: ${{ secrets.GHCR_PAT }}
+        image_tag: git-${{ steps.sha_short.outputs.sha_short }}
     - name: Get the output time
       run: echo "The time was ${{ steps.hello.outputs.time }}"

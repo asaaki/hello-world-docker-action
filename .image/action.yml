@@ -1,25 +1,33 @@
-name: 'Hello World (Image Builder)'
+name: Hello World (Image Builder)
 
-description: 'Greet someone and record the time'
+description: Greet someone and record the time
 
 branding:
-  icon: 'radio'
-  color: 'blue'
-
-runs:
-  using: 'docker'
-  image: 'ghcr.io/asaaki/hello-world-docker-action:event-data' # TODO: do not forget to switch back!
-  args: ["--greetee", "${{ inputs.greetee }}", "--token", "${{ inputs.github_token }}"]
+  icon: radio
+  color: blue
 
 inputs:
-  greetee: # id of input
-    description: 'Who to greet'
+  greetee:
+    description: Who to greet
     required: true
-    default: 'World'
+    default: World
   github_token:
-    description: 'GitHub Personal Access Token with repo permissions'
+    description: GitHub Personal Access Token with repo permissions
     required: true
+  image_tag:
+    description: Tag for the image
+    required: true
+    default: edge
+
+runs:
+  using: docker
+  image: "ghcr.io/asaaki/hello-world-docker-action:${{ inputs.image_tag }}"
+  args:
+    - --greetee
+    - "${{ inputs.greetee }}"
+    - --token
+    - "${{ inputs.github_token }}"
 
 outputs:
   time: # id of output
-    description: 'The time we greeted you'
+    description: The time we greeted you
