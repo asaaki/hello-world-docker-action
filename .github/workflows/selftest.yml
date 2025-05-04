@@ -1,13 +1,19 @@
 name: Self Test
 
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
+  # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflow_run
+  workflow_run:
+    workflows: [Docker image]
+    types:
+      - completed
 
 jobs:
   run:
     runs-on: ubuntu-latest
     name: Self tests the hello world docker action
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - uses: actions/checkout@v4
