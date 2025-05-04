@@ -36,6 +36,7 @@ jobs:
         tags: |
           type=edge,branch=main
           type=sha,prefix=git-
+          type=sha,format=long,prefix=
           type=semver,pattern=v{{version}}
           type=semver,pattern=v{{major}}.{{minor}}
           type=semver,pattern=v{{major}}
