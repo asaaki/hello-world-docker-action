@@ -1,4 +1,4 @@
-use anyhow::{Context, Error, Result};
+use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
 use envconfig::Envconfig;
 use serde::{Deserialize, Serialize};
@@ -93,11 +93,11 @@ pub async fn main() -> MainResult {
             .header("authorization", format!("token {}", &token))
             .json(&body);
 
-        let response = request.send().await.map_err(Error::msg)?;
+        let response = request.send().await?;
 
         println!("[status] {}", response.status());
 
-        let res_json: TypedResponse = response.json().await.map_err(Error::msg)?;
+        let res_json: TypedResponse = response.json().await?;
 
         println!("[response] {:#?}", res_json);
         println!("[response.id] {:#?}", res_json.get("id"));
