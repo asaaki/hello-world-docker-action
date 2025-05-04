@@ -58,7 +58,7 @@ type TypedResponse = BTreeMap<String, Value>;
 // type TypedResponse = BTreeMap<Option<String>, Option<Value>>;
 // type TypedResponse = Value;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 pub async fn main() -> MainResult {
     let args = Args::from_args();
     let config = EnvConfig::init_from_env()
@@ -99,7 +99,7 @@ pub async fn main() -> MainResult {
 
         let res_json: TypedResponse = response.json().await?;
 
-        println!("[response] {:#?}", res_json);
+        println!("response = {:#?}", res_json);
         println!("[response.id] {:#?}", res_json.get("id"));
     }
 
