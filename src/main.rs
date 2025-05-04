@@ -111,7 +111,7 @@ pub async fn main() -> MainResult {
     println!("Hello, {}!", name);
 
     let now: DateTime<Utc> = Utc::now();
-    println!(r#"echo "name=time::{}" >> $GITHUB_OUTPUT"#, now.to_rfc3339());
+    println!(r#"echo "time={}" >> $GITHUB_OUTPUT"#, now.to_rfc3339());
 
     Ok(())
 }
