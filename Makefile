@@ -7,7 +7,7 @@ GITHUB_REPOSITORY  = asaaki/$(PROJECT)
 GITHUB_EVENT_PATH  = /tmp/event.json
 LOCAL_EVENT_PATH   = $(PWD)/fixtures/event.json
 GHCR_REPO          = ghcr.io/$(GITHUB_REPOSITORY)
-# GHCR_PAT = via .envrc
+GHCR_PAT          ?= unset
 
 DOCKER_RUN_ENVS    = -e GITHUB_REPOSITORY=$(GITHUB_REPOSITORY) \
                      -e GITHUB_EVENT_PATH=$(GITHUB_EVENT_PATH) \
@@ -26,7 +26,7 @@ build:
 		-t $(LOCAL_DOCKER_IMAGE) .
 
 run:
-	@docker run --rm $(DOCKER_RUN_ENVS) $(DOCKER_RUN_VOLS) \
+	docker run --rm $(DOCKER_RUN_ENVS) $(DOCKER_RUN_VOLS) \
 		$(LOCAL_DOCKER_IMAGE) \
 		--greetee Chris --token $(GHCR_PAT)
 
