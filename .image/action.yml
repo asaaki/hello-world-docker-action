@@ -14,14 +14,10 @@ inputs:
   github_token:
     description: GitHub Personal Access Token with repo permissions
     required: true
-  image_tag:
-    description: Tag for the image
-    required: true
-    default: edge
 
 runs:
   using: docker
-  image: ../Dockerfile
+  image: ../Dockerfile # sadly very slow, because it doesn't re-use caches
   args:
     - --greetee
     - "${{ inputs.greetee }}"
@@ -29,5 +25,5 @@ runs:
     - "${{ inputs.github_token }}"
 
 outputs:
-  time: # id of output
+  time:
     description: The time we greeted you

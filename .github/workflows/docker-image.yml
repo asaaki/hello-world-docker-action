@@ -24,13 +24,6 @@ jobs:
     - run: docker info
     - run: docker system df -v
 
-    # - uses: actions/cache@v4
-    #   with:
-    #     path: /tmp/.buildx-cache
-    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-buildx-
-
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
 
@@ -77,13 +70,13 @@ jobs:
     - uses: actions/checkout@v4
     - name: Short SHA
       id: sha_short
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
     - name: Hello world action step
       id: hello # for use in step below
       uses: ./.image
       with:
         greetee: "${{ secrets.HELLO_SECRET_NAME }}"
         github_token: ${{ secrets.GHCR_PAT }}
-        image_tag: git-${{ steps.sha_short.outputs.sha_short }}
     - name: Get the output time
       run: echo "The time was ${{ steps.hello.outputs.time }}"

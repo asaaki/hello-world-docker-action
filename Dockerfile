@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1-labs
 
-FROM rust:1.86.0-bookworm as builder
+FROM rust:1.86.0-bookworm AS builder
 
 ARG MAGICPAK_VER=1.4.0
 ARG MAGICPAK_ARCH=x86_64
@@ -60,7 +60,7 @@ RUN magicpak -v \
 
 ### busybox ###
 
-FROM busybox:1.37.0-glibc as shell
+FROM busybox:1.37.0-glibc AS shell
 
 WORKDIR /shell
 
@@ -70,8 +70,8 @@ RUN cd /shell; \
 
 # ### prod image ### #
 
-# note: do not use :nonroot tag, as it does not work with fly.io
-FROM gcr.io/distroless/cc as production
+# note: do not use :nonroot tag, AS it does not work with fly.io
+FROM gcr.io/distroless/cc AS production
 
 ARG RUST_BACKTRACE
 
