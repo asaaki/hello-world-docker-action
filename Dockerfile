@@ -63,10 +63,11 @@ RUN cd /shell; \
 
 # ### prod image ### #
 
-# note: do not use :nonroot tag, AS it does not work with fly.io
-FROM gcr.io/distroless/cc AS production
+FROM scratch AS production
 
 ARG RUST_BACKTRACE
+
+LABEL service="rusty hello world github action"
 
 ENV PATH=/app/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV RUST_BACKTRACE=${RUST_BACKTRACE}
