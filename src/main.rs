@@ -70,14 +70,15 @@ pub async fn main() -> MainResult {
     if let Some(pr) = event.pull_request {
         let token = args.token;
 
-        let raw_url = format!(
-            "{}/repos/{}/issues/{}/comments",
-            config.api_url, config.repository, pr.number
-        );
+        let url = {
+            let raw_url = format!(
+                "{}/repos/{}/issues/{}/comments",
+                config.api_url, config.repository, pr.number
+            );
+            Url::parse(&raw_url)?
+        };
 
-        let url = Url::parse(&raw_url)?;
-
-        println!("url = {}", &url);
+        println!("url = {url}");
 
         let body = json!( { "body": "Some test comment from a rusty GH action." });
 
@@ -90,20 +91,15 @@ pub async fn main() -> MainResult {
             )
             .header("accept", "application/vnd.github.v3+json")
             .header("authorization", format!("token {}", &token))
-            .json(&body)
-            ;
+            .json(&body);
 
         let response = request.send().await.map_err(Error::msg)?;
 
         println!("[status] {}", response.status());
-        // let headers = response.iter_mut().collect::<BTreeMap<String, String>>();
-        // for (name, values) in response.iter() {
-        //     println!("[headers] {:?} => {:?}", name, values);
-        // }
-        // println!("[response] {:#?}", res_json);
 
         let res_json: TypedResponse = response.json().await.map_err(Error::msg)?;
 
+        println!("[response] {:#?}", res_json);
         println!("[response.id] {:#?}", res_json.get("id"));
     }
 
