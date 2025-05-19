@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1-labs
 
-FROM rust:1.86.0-bookworm AS builder
+FROM rust:1.87.0-bookworm AS builder
 
 ENV DEBIAN_FRONTEND noninteractive
 
