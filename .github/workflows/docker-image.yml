@@ -51,7 +51,7 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PAT }}
 
-    - uses: docker/build-push-action@v6.16.0
+    - uses: docker/build-push-action@v6.18.0
       with:
         context: .
         # cache-from: type=gha
