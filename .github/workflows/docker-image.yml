@@ -28,7 +28,7 @@ jobs:
     - run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
     # https://github.com/docker/metadata-action
-    - uses: docker/metadata-action@v5.7.0
+    - uses: docker/metadata-action@v5.8.0
       id: docker_meta
       with:
         images: |
