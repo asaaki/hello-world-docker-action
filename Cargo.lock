@@ -10,6 +10,7 @@ dependencies = [
  "chrono",
  "envconfig",
  "reqwest",
+ "rustls-pki-types",
  "serde",
  "serde_json",
  "structopt",

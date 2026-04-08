@@ -1,9 +1,7 @@
 use anyhow::{Context, Result};
-use chrono::{DateTime, Utc};
 use envconfig::Envconfig;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
-use std::{collections::BTreeMap, fs};
+use std::fs;
 use structopt::StructOpt;
 use url::Url;
 
@@ -54,7 +52,7 @@ struct PullRequest {
     // ...
 }
 
-type TypedResponse = BTreeMap<String, Value>;
+type TypedResponse = std::collections::BTreeMap<String, serde_json::Value>;
 // type TypedResponse = BTreeMap<Option<String>, Option<Value>>;
 // type TypedResponse = Value;
 
@@ -80,7 +78,7 @@ pub async fn main() -> MainResult {
 
         println!("url = {url}");
 
-        let body = json!( { "body": "Some test comment from a rusty GH action." });
+        let body = serde_json::json!( { "body": "Some test comment from a rusty GH action." });
         let request = reqwest_client()?
             .post(url)
             // WARN: GitHub **requires** a user agent string, but some client implementations do not set one by default
@@ -105,8 +103,36 @@ pub async fn main() -> MainResult {
     let name = args.greetee;
     println!("Hello, {}!", name);
 
-    let now: DateTime<Utc> = Utc::now();
-    println!(r#"echo "time={}" >> $GITHUB_OUTPUT"#, now.to_rfc3339());
+    set_github_output_time()?;
+
+    Ok(())
+}
+
+fn set_github_output_time() -> MainResult {
+    let now: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
+    let (key, value) = ("time", now.to_rfc3339());
+    println!(r#"$ echo "{key}={value}" >> $GITHUB_OUTPUT"#);
+
+    match std::env::var("GITHUB_OUTPUT") {
+        Ok(github_output) => {
+            std::process::Command::new("echo")
+                .arg(format!("{key}={value}"))
+                .stdout(
+                    fs::OpenOptions::new()
+                        .create(true)
+                        .append(true)
+                        .open(&github_output)
+                        .with_context(|| {
+                            format!("Failed to open GITHUB_OUTPUT file: {}", github_output)
+                        })?,
+                )
+                .status()
+                .with_context(|| "Failed to execute echo command")?;
+        }
+        Err(_) => {
+            println!("GITHUB_OUTPUT not set, skipping output variable assignment");
+        }
+    }
 
     Ok(())
 }
@@ -118,9 +144,14 @@ fn reqwest_client() -> Result<reqwest::Client, reqwest::Error> {
 }
 
 fn webpki_root_certificates() -> impl Iterator<Item = reqwest::Certificate> {
-    // NOTE: Don't get info about the certs slice; DO NOT HOVER OVER `TLS_SERVER_ROOTS_CERTS` IN ZED!
-    webpki_root_certs::TLS_SERVER_ROOT_CERTS.iter().map(|der| {
+    tls_server_roots_certs().map(|der| {
         reqwest::Certificate::from_der(der.as_ref())
             .expect("webpki-root-certs must contain valid DER-encoded X.509 certs")
     })
+}
+
+// NOTE: Don't get info about the certs slice; DO NOT HOVER OVER `TLS_SERVER_ROOTS_CERTS` IN ZED!
+fn tls_server_roots_certs<'a>()
+-> impl Iterator<Item = &'a rustls_pki_types::CertificateDer<'static>> {
+    webpki_root_certs::TLS_SERVER_ROOT_CERTS.iter()
 }
