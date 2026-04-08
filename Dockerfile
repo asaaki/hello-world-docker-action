@@ -74,7 +74,7 @@ ENV RUST_BACKTRACE=${RUST_BACKTRACE}
 
 COPY --from=builder --chown=1001:1001 /bundle /.
 COPY --from=builder /var/empty /var/empty
-COPY --from=builder /usr/lib/ssl/certs /usr/lib/ssl/certs
+# COPY --from=builder /usr/lib/ssl/certs /usr/lib/ssl/certs
 COPY --link --from=ghcr.io/markentier/utilities:all-in-one /busybox /bin
 
 USER 1001:1001

@@ -15,6 +15,7 @@ dependencies = [
  "structopt",
  "tokio",
  "url",
+ "webpki-root-certs",
 ]
 
 [[package]]

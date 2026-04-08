@@ -13,6 +13,7 @@ serde_json = "1.0.149"
 structopt = "0.3.26"
 tokio = { version = "1.51.1", features = ["macros"] }
 url = { version = "2.5.8", features = ["serde"] }
+webpki-root-certs = "1.0.6"
 
 [profile.release]
 opt-level = 3

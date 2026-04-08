@@ -81,10 +81,9 @@ pub async fn main() -> MainResult {
         println!("url = {url}");
 
         let body = json!( { "body": "Some test comment from a rusty GH action." });
-
-        let request = reqwest::Client::new()
+        let request = reqwest_client()?
             .post(url)
-            // ! GitHub requires an user agent string, but some client implementations do not set one by default
+            // WARN: GitHub **requires** a user agent string, but some client implementations do not set one by default
             .header(
                 "user-agent",
                 "hello-world-docker-action client (rust/stable; client=reqwest, tls=rustls)",
@@ -110,4 +109,18 @@ pub async fn main() -> MainResult {
     println!(r#"echo "time={}" >> $GITHUB_OUTPUT"#, now.to_rfc3339());
 
     Ok(())
+}
+
+fn reqwest_client() -> Result<reqwest::Client, reqwest::Error> {
+    reqwest::Client::builder()
+        .tls_certs_only(webpki_root_certificates())
+        .build()
+}
+
+fn webpki_root_certificates() -> impl Iterator<Item = reqwest::Certificate> {
+    // NOTE: Don't get info about the certs slice; DO NOT HOVER OVER `TLS_SERVER_ROOTS_CERTS` IN ZED!
+    webpki_root_certs::TLS_SERVER_ROOT_CERTS.iter().map(|der| {
+        reqwest::Certificate::from_der(der.as_ref())
+            .expect("webpki-root-certs must contain valid DER-encoded X.509 certs")
+    })
 }
