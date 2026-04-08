@@ -1,16 +1,16 @@
 # syntax=docker/dockerfile:1-labs
 
-FROM rust:1.86.0-bookworm AS builder
+FROM rust:1.94.1-trixie AS builder
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#example-cache-apt-packages
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 RUN \
-  --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
     /bin/sh -c set -ex; \
     apt-get update && apt-get upgrade; \
     apt-get install -y ca-certificates clang cmake libnss3 libnss3-dev libssl-dev mold pkg-config
@@ -35,8 +35,8 @@ WORKDIR /app
 COPY . .
 
 RUN \
-  --mount=type=cache,target=/usr/local/cargo/registry \
-  --mount=type=cache,target=/app/target \
+    --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
     cargo install --root /app --path .
 
 # Note: if you want to inspect linked shared libs;
