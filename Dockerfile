@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1-labs
+# syntax=docker/dockerfile:1
 
 FROM rust:1.94.1-trixie AS builder
 
@@ -12,10 +12,8 @@ RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     /bin/sh -c set -ex; \
-    apt-get update && apt-get upgrade; \
-    apt-get install -y ca-certificates clang cmake libnss3 libnss3-dev libssl-dev mold pkg-config
-
-RUN update-ca-certificates --fresh
+    apt-get update && apt-get upgrade -y; \
+    apt-get install -y clang cmake mold pkg-config
 
 COPY --link --from=ghcr.io/markentier/utilities:all-in-one /usr/bin/magicpak /usr/bin/magicpak
 
@@ -48,18 +46,7 @@ RUN magicpak \
     --install-to /app/bin/ \
     --include /etc/passwd \
     --include /etc/group \
-    --include '/lib/x86_64-linux-gnu/libnss_*' \
     -v
-
-### busybox ###
-
-FROM busybox:1.37.0-glibc AS shell
-
-WORKDIR /shell
-
-RUN cd /shell; \
-    cp /bin/busybox .; \
-    for c in $(./busybox --list); do ln -s ./busybox ./$c; done
 
 # ### prod image ### #
 
@@ -74,7 +61,6 @@ ENV RUST_BACKTRACE=${RUST_BACKTRACE}
 
 COPY --from=builder --chown=1001:1001 /bundle /.
 COPY --from=builder /var/empty /var/empty
-# COPY --from=builder /usr/lib/ssl/certs /usr/lib/ssl/certs
 COPY --link --from=ghcr.io/markentier/utilities:all-in-one /busybox /bin
 
 USER 1001:1001
