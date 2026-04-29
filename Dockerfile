@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM rust:1.94.1-trixie AS builder
+FROM rust:1.95.0-trixie AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
